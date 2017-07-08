@@ -29,9 +29,11 @@ public class QueueMsgProducer implements InitializingBean, DisposableBean {
 	public void sendMsg() {
 		executor.scheduleAtFixedRate(() -> {
 			jmsTemplate.send(session -> {
-				return session.createTextMessage("队列模式发送的数据:" + new Random().nextInt(10000));
+				String msg = "队列模式发送的数据:" + new Random().nextInt(10000);
+				System.out.println(this.getClass().getName() + "发送数据:" + msg);
+				return session.createTextMessage(msg);
 			});
-		}, 0, 3, TimeUnit.SECONDS);
+		}, 0, 1, TimeUnit.SECONDS);
 	}
 
 	@Override
