@@ -29,7 +29,7 @@ public class ActiveMqConfiguration {
 	public ConnectionFactory connectionFactory() {
 		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory();
 		factory.setBrokerURL("tcp://localhost:61616");
-		factory.setUseAsyncSend(true); // 不进行异步发送
+		factory.setUseAsyncSend(true); // 进行异步发送
 		// factory.setClientID("factory-client-01"); // 当工厂中存在多个链接时，clientId不可重复
 		return factory;
 	}
