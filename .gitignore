@@ -1,0 +1,7 @@
+.project
+.settings/
+activemq-virtualtopic-consumer/.classpath
+activemq-virtualtopic-consumer/target
+activemq-study/.classpath
+activemq-study/.springBeans
+activemq-study/target

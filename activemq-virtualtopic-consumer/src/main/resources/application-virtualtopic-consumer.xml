@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供 -->
+	<bean id="targetConnectionFactory" class="org.apache.activemq.spring.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp://192.168.31.171:61616" />
+	</bean>
+
+	<!-- 带缓存效果的连接工厂 -->
+	<bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+		<property name="connectionFactory" ref="targetConnectionFactory" />
+		<!-- 对打连接数 -->
+		<property name="maxConnections" value="100" />
+	</bean>
+
+	<!-- Spring提供的JMS工具类，它可以进行消息发送、接收等 -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="pooledConnectionFactory" />
+		<property name="defaultDestination" ref="queueGroup01Destination" />
+		<property name="pubSubDomain" value="true" />
+		<property name="explicitQosEnabled" value="true" />
+		<!-- 持久化 -->
+		<property name="deliveryMode" value="2" />
+	</bean>
+
+	<!-- 虚拟主题第一组队列 -->
+	<bean id="queueGroup01Destination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg name="name"
+			value="Consumer.group01.VirtualTopic.orders" />
+	</bean>
+	<!-- 虚拟主题第二组队列 -->
+	<bean id="queueGroup02Destination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg name="name"
+			value="Consumer.group02.VirtualTopic.orders"></constructor-arg>
+	</bean>
+
+	<!-- 配置消息的监听器 -->
+	<bean id="virtualTopicGroup01Listener01"
+		class="com.huan.activemq.virtualtopic.consumer.VirtualTopicGroup01Listener01" />
+	<bean id="virtualTopicGroup01Listener02"
+		class="com.huan.activemq.virtualtopic.consumer.VirtualTopicGroup01Listener02" />
+	<bean id="virtualTopicGroup02Listener01"
+		class="com.huan.activemq.virtualtopic.consumer.VirtualTopicGroup02Listener01" />
+	<bean id="virtualTopicGroup02Listener02"
+		class="com.huan.activemq.virtualtopic.consumer.VirtualTopicGroup02Listener02" />
+
+
+	<!-- 配置消息监听容器 -->
+	<bean id="queueMessageGroup01ListenerContainer01"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="pooledConnectionFactory" />
+		<property name="destination" ref="queueGroup01Destination" />
+		<property name="messageListener" ref="virtualTopicGroup01Listener01" />
+	</bean>
+	<bean id="queueMessageGroup01ListenerContainer02"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="pooledConnectionFactory" />
+		<property name="destination" ref="queueGroup01Destination" />
+		<property name="messageListener" ref="virtualTopicGroup01Listener02" />
+	</bean>
+	<bean id="queueMessageGroup02ListenerContainer01"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="pooledConnectionFactory" />
+		<property name="destination" ref="queueGroup02Destination" />
+		<property name="messageListener" ref="virtualTopicGroup02Listener01" />
+	</bean>
+	<bean id="queueMessageGroup02ListenerContainer02"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="pooledConnectionFactory" />
+		<property name="destination" ref="queueGroup02Destination" />
+		<property name="messageListener" ref="virtualTopicGroup02Listener01" />
+	</bean>
+</beans>

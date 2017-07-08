@@ -1,0 +1,3 @@
+queue包中的是基于传统xml配置的点对点模式
+
+topic包中的是基于javaconfiger配置的发布订阅模式

@@ -1,0 +1,12 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huan.activemq.事务.和spring整合.dao.UserDao">
+	<insert id="insertUser" parameterType="com.huan.activemq.事务.和spring整合.entity.User">
+		insert into t_user values
+		(#{id},#{name},#{age})
+	</insert>
+
+	<delete id="deleteUser" parameterType="string">
+		delete from t_user where
+		id = #{id}
+	</delete>
+</mapper>
