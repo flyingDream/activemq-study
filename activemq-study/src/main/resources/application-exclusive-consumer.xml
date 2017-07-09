@@ -16,39 +16,22 @@
 		<property name="maxConnections" value="10" />
 	</bean>
 
-	<bean id="queue" class="org.apache.activemq.command.ActiveMQQueue">
-		<constructor-arg name="name" value="delay-cron-queue" />
-	</bean>
-
 	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
 		<property name="connectionFactory" ref="connectionFactory" />
 		<property name="defaultDestination" ref="queue" />
 		<property name="pubSubDomain" value="false" />
 	</bean>
 
-	<bean id="cronMessageProducer" class="com.huan.activemq.延时或定时消息.CronMessageProducer">
-		<property name="jmsTemplate" ref="jmsTemplate" />
+	<bean id="exclusiveConsumerListener" class="com.huan.activemq.独有消费者.ExclusiveConsumerListener" />
+	<bean id="exclusiveConsumerListener2" class="com.huan.activemq.独有消费者.ExclusiveConsumerListener2" />
+	<bean id="queue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg name="name" value="spring-queue?consumer.exclusive=true" />
 	</bean>
-
-	<bean id="delayMessageProducer" class="com.huan.activemq.延时或定时消息.DelayMessageProducer">
-		<property name="jmsTemplate" ref="jmsTemplate" />
-	</bean>
-
-	<bean id="customerMessageProducerListener"
-		class="com.huan.activemq.延时或定时消息.CustomerMessageProducerListener" />
-
-	<!-- 
-		concurrency="5" destination-type="queue"
-		表示这个队列的监听者下存在5个consumer消费者，当同时来5条消息时，且消费一条消息比较耗时，
-		则可能存在5个consumer同时消费这5条消费，而不会等上一条消费完才开始消费下一条，因为这个队列的
-		consumer存在多个，而不是一个。
-	 -->
-
 	<jms:listener-container acknowledge="auto"
 		connection-factory="connectionFactory" container-type="default"
-		destination-type="queue" concurrency="5-10"> <!-- 如果是topic类型，建议设置成1 -->
-		<jms:listener destination="delay-cron-queue"
-			ref="customerMessageProducerListener" />
+		destination-type="queue">
+		<jms:listener destination="spring-queue?consumer.exclusive=true" ref="exclusiveConsumerListener" />
+		<jms:listener destination="spring-queue?consumer.exclusive=true" ref="exclusiveConsumerListener2" />
 	</jms:listener-container>
 
 </beans>
