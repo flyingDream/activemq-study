@@ -39,10 +39,9 @@
 
 	<jms:listener-container acknowledge="auto"
 		connection-factory="connectionFactory" container-type="default"
-		destination-type="queue" concurrency="5-10">
+		destination-type="queue" concurrency="5-10"> <!-- 如果是topic类型，建议设置成1 -->
 		<jms:listener destination="delay-cron-queue"
 			ref="customerMessageProducerListener" />
-			<jms:listener destination="delay-cron-queue" ref="customerMessageProducerListener2"/>
 	</jms:listener-container>
 
 </beans>
